@@ -6,8 +6,13 @@ from project import firehose_url
 def run_reader():
     last_timestamp = 0
     same_ts_count = 0  # keep track of number of events with last_timestamp
+
     while True:
-        r = requests.get(firehose_url)
+        try:
+            r = requests.get(firehose_url)
+        except Exception:
+            print("No HTTPS connection")
+            exit(0)
         data = r.json()  # parse response into json
 
         events_list = data["events"]  # parse events item into list
