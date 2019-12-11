@@ -1,6 +1,7 @@
 import requests
 
 from project import firehose_url
+from datetime import datetime
 
 
 def run_reader():
@@ -27,11 +28,19 @@ def run_reader():
                 if ts_duplicate_counter <= same_ts_count:
                     continue  # this would be a duplicate event, continue
 
-            print(event["ts"])
+            print_entry(event)
             last_timestamp = event["ts"]  # track last timestamp for next run
 
         same_ts_count = ts_duplicate_counter
 
 
-def print_entry(timestamp, sub, action):
-    print("test")
+def print_entry(event):
+    time = str(datetime.utcfromtimestamp(int(event["ts"])).strftime('%Y-%m-%d %H:%M:%S'))
+    sub_name = event["sub_name"]
+    action = event["type"]
+    vote_comments = str(event["votes"]) + "/" + str(event["com"])
+    title = event["title"]
+    user = event["who"]
+    status = event["status"]
+    print("{} | {:<12} | {:<8} | {:<8} | {} | {} | {}"
+          .format(time, sub_name, action, vote_comments, title, user, status))
