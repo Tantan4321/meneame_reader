@@ -1,4 +1,4 @@
-from project.script import print_output
+from project.script import run_reader
 
 if __name__ == '__main__':
-	print_output()
+    run_reader()
