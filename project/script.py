@@ -23,9 +23,9 @@ def run_reader():
                     continue  # this would be a duplicate event, continue
 
             print(event["ts"])
+            last_timestamp = event["ts"]  # track last timestamp for next run
 
         same_ts_count = ts_duplicate_counter
-        last_timestamp = data["ts"]  # track last timestamp for next run
 
 
 def print_entry(timestamp, sub, action):
