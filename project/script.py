@@ -8,6 +8,7 @@ from datetime import datetime
 def run_reader():
     last_timestamp = 0
     same_ts_count = 0  # keep track of number of events with last_timestamp
+    ts_duplicate_counter = 1  # unique events with same ts can show up next query, init with 1
     try:
         requests.get("https://www.google.com/")
     except Exception:
@@ -19,7 +20,6 @@ def run_reader():
 
         events_list = data["events"]  # parse events item into list
         reversed_events = events_list[::-1]  # reverse the list to be chronologically correct
-        ts_duplicate_counter = 0  # unique events with same ts can show up next query
 
         for event in reversed_events:
             if int(event["ts"]) < int(last_timestamp):
@@ -33,6 +33,7 @@ def run_reader():
             last_timestamp = event["ts"]  # track last timestamp for next run
 
         same_ts_count = ts_duplicate_counter
+        ts_duplicate_counter = 0
 
 
 def print_entry(event):
