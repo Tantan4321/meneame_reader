@@ -22,9 +22,9 @@ def run_reader():
         reversed_events = events_list[::-1]  # reverse the list to be chronologically correct
 
         for event in reversed_events:
-            if int(event["ts"]) < int(last_timestamp):
+            if int(event["ts"]) < int(last_timestamp):  # entry is before latest timestamp, already logged
                 continue
-            if int(event["ts"]) == int(last_timestamp):
+            if int(event["ts"]) == int(last_timestamp):  # new entries with latest timestamp could have arrived
                 ts_duplicate_counter += 1
                 if ts_duplicate_counter <= same_ts_count:
                     continue  # this would be a duplicate event, continue
@@ -32,8 +32,8 @@ def run_reader():
             print_entry(event)
             last_timestamp = event["ts"]  # track last timestamp for next run
 
-        same_ts_count = ts_duplicate_counter
-        ts_duplicate_counter = 0
+        same_ts_count = ts_duplicate_counter  # track number of entries with latest timestamp for next run
+        ts_duplicate_counter = 0  # reset ts counter for next loop
 
 
 def print_entry(event):
@@ -45,5 +45,5 @@ def print_entry(event):
     user = event["who"]
     status = event["status"]
 
-    print(BeautifulSoup("{} | {:<12} | {:<8} | {:<8} | {} | {} | {}"
+    print(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
                         .format(time, sub_name, action, vote_comments, title, user, status), "html.parser"))
