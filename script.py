@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-from project import firehose_url
 from datetime import datetime
 
 
@@ -15,7 +14,7 @@ def run_reader():
         print("HTTPS error, check connection")
         exit(0)
     while True:
-        r = requests.get(firehose_url)
+        r = requests.get("https://www.meneame.net/backend/sneaker2")
         data = r.json()  # parse response into json
 
         events_list = data["events"]  # parse events item into list
@@ -47,3 +46,7 @@ def print_entry(event):
 
     print(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
                         .format(time, sub_name, action, vote_comments, title, user, status), "html.parser"))
+
+
+if __name__ == "__main__":
+    run_reader()
