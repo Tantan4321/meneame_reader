@@ -1,1 +1,3 @@
-meneame_reader
+# meneame_reader
+
+A website firehose scanner for Menéame.
