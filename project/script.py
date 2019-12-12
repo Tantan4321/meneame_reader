@@ -8,13 +8,13 @@ from datetime import datetime
 def run_reader():
     last_timestamp = 0
     same_ts_count = 0  # keep track of number of events with last_timestamp
-
+    try:
+        requests.get("https://www.google.com/")
+    except Exception:
+        print("HTTPS error, check connection")
+        exit(0)
     while True:
-        try:
-            r = requests.get(firehose_url)
-        except Exception:
-            print("No HTTPS connection")
-            exit(0)
+        r = requests.get(firehose_url)
         data = r.json()  # parse response into json
 
         events_list = data["events"]  # parse events item into list
