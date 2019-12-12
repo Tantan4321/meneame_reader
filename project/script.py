@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 
 from project import firehose_url
 from datetime import datetime
@@ -42,5 +43,6 @@ def print_entry(event):
     title = event["title"]
     user = event["who"]
     status = event["status"]
-    print("{} | {:<12} | {:<8} | {:<8} | {} | {} | {}"
-          .format(time, sub_name, action, vote_comments, title, user, status))
+
+    print(BeautifulSoup("{} | {:<12} | {:<8} | {:<8} | {} | {} | {}"
+                        .format(time, sub_name, action, vote_comments, title, user, status), "html.parser"))
