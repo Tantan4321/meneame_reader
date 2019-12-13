@@ -45,7 +45,8 @@ def print_entry(event):
     status = event["status"]
 
     print(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
-                        .format(time, sub_name, action, vote_comments, title, user, status), "html.parser"))
+                        .format(time, sub_name, action, vote_comments, title, user, status), "html.parser")
+                        .decode('ascii').strip())
 
 
 if __name__ == "__main__":
