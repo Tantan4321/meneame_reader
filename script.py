@@ -1,7 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
-
+import re
 from datetime import datetime
+
+import requests
+from bs4 import BeautifulSoup, UnicodeDammit
 
 
 def run_reader():
@@ -44,9 +45,10 @@ def print_entry(event):
     user = event["who"]
     status = event["status"]
 
-    ret = BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
-                        .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser')
-    print(ret)
+    ret = str(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
+                        .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser'))
+
+    print(UnicodeDammit(ret).unicode_markup)
 
 
 if __name__ == "__main__":
