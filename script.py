@@ -44,8 +44,9 @@ def print_entry(event):
     user = event["who"]
     status = event["status"]
 
-    print(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
-                        .format(time, sub_name, action, vote_comments, title, user, status), from_encoding="utf-8").encode('utf-8'))
+    ret = BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
+                        .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser')
+    print(ret)
 
 
 if __name__ == "__main__":
