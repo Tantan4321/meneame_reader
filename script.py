@@ -57,9 +57,10 @@ def run_reader():
                     if int(event["ts"]) == last_timestamp:  # new entries with last timestamp could have arrived
                         skip = False
                         for old_event in last_events:
+                            # hex dump
                             old = ":".join("{:02x}".format(ord(c)) for c in old_event)
                             new = ":".join("{:02x}".format(ord(c)) for c in ret)
-                            if old == new:
+                            if old == new:  # do hex comparison
                                 skip = True
                                 break
                         if skip:

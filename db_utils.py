@@ -10,6 +10,79 @@ def db_connect(db_path: str = DEFAULT_PATH):
     return con
 
 
+def create_database(connection):
+    cur = connection.cursor()
+
+    articles_sql = """
+    CREATE TABLE articles (
+        id integer PRIMARY KEY,
+        title text NOT NULL,
+        votes integer NOT NULL,
+        comments integer NOT NULL,
+        posting_user text NOT NULL,
+        sub text NOT NULL,
+        timestamp text NOT NULL)"""
+    cur.execute(articles_sql)
+
+    votes_sql = """
+    CREATE TABLE votes (
+        id integer PRIMARY KEY,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL,
+        article_id integer NOT NULL,
+        FOREIGN KEY (article_id) REFERENCES articles (id))"""
+    cur.execute(votes_sql)
+
+    comments_sql = """
+    CREATE TABLE comments (
+        id integer PRIMARY KEY,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL,
+        article_id integer NOT NULL,
+        FOREIGN KEY (article_id) REFERENCES articles (id))"""
+    cur.execute(comments_sql)
+
+    edits_sql = """
+    CREATE TABLE edits (
+        id integer PRIMARY KEY,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL,
+        article_id integer NOT NULL,
+        FOREIGN KEY (article_id) REFERENCES articles (id))"""
+    cur.execute(edits_sql)
+
+    published_sql = """
+    CREATE TABLE published (
+        id integer PRIMARY KEY,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL,
+        article_id integer NOT NULL,
+        FOREIGN KEY (article_id) REFERENCES articles (id))"""
+    cur.execute(published_sql)
+
+    problems_sql = """
+    CREATE TABLE problems (
+        id integer PRIMARY KEY,
+        title text NOT NULL,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL)"""
+    cur.execute(problems_sql)
+
+    post_sql = """
+    CREATE TABLE posts (
+        id integer PRIMARY KEY,
+        title text NOT NULL,
+        user text NOT NULL,
+        status text NOT NULL,
+        timestamp text NOT NULL)"""
+    cur.execute(post_sql)
+
+
 def create_article(connection, title, username, sub, timestamp):
     sql = """
         INSERT INTO articles (title, votes, user, sub, timestamp) 
@@ -43,7 +116,7 @@ def print_table(connection):
     (id, title, votes)
     """
     cur = connection.cursor()
-    cur.execute("SELECT id, title, votes FROM articles")
+    cur.execute("SELECT * FROM articles")
     results = cur.fetchall()
 
     for row in results:
