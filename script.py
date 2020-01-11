@@ -26,7 +26,6 @@ def run_reader():
     con = db_utils.db_connect()  # connect to sqlite database
     atexit.register(exit_handler, con)
 
-    latest_events = []
     try:
         while True:
             r = requests.get("https://www.meneame.net/backend/sneaker2")
@@ -35,29 +34,44 @@ def run_reader():
             events_list = data["events"]  # parse events item into list
             reversed_events = events_list[::-1]  # reverse the list to be chronologically correct
 
-            latest_events.clear()  # clear the local latest events tracker
+            latest_events = []  # create empty local latest events tracker
 
             if is_first_run:
                 last_timestamp = int(events_list[0]["ts"])  # first element of reversed list will be latest event
                 for event in reversed_events:
-                    if int(event["ts"]) == int(last_timestamp):
-                        latest_events.append(event)
-                    log_entry(con, event)
-
-                last_events = latest_events.copy()  # copy local latest events into last events
+                    ret = build_entry(event).strip()
+                    if int(event["ts"]) == last_timestamp:
+                        last_events.append(ret)
+                    print(ret)  # print the entry in CL
+                    # log_entry(con, event)
                 is_first_run = False
             else:
+                latest_events.clear()
                 new_timestamp = int(events_list[0]["ts"])  # first element of reversed list will be the most recent
                 for event in reversed_events:
-                    if int(event["ts"]) == int(new_timestamp):  # keep track of latest events for next run
-                        latest_events.append(event)
-                    if int(event["ts"]) < int(last_timestamp):  # entry is before latest timestamp, already logged
+                    # print("starting....................................")
+                    ret = build_entry(event).strip()  # build the formatted string
+                    if int(event["ts"]) == new_timestamp:  # keep track of latest events for next run
+                        latest_events.append(ret)
+                    if int(event["ts"]) < last_timestamp:  # entry is before last timestamp, already logged
                         continue
-                    if int(event["ts"]) == int(last_timestamp):  # new entries with latest timestamp could have arrived
-                        if event in last_events:
+                    if int(event["ts"]) == last_timestamp:  # new entries with last timestamp could have arrived
+                        skip = False
+                        for old_event in last_events:
+                            old = ":".join("{:02x}".format(ord(c)) for c in old_event)
+                            new = ":".join("{:02x}".format(ord(c)) for c in ret)
+                            if old == new:
+                                skip = True
+                                break
+                        if skip:
+                            print("skipping....")
                             continue  # this event was reported last run, continue
-                    log_entry(con, event)
+                        # print("not skipped")
+                    print(ret)
+                    # log_entry(con, event)
+                # print("outside for loop")
 
+                last_events.clear()
                 last_events = latest_events.copy()  # copy local latest events into last events
                 last_timestamp = new_timestamp  # track last timestamp for next run
 
@@ -65,15 +79,30 @@ def run_reader():
         print('Keyboard interrupt...')
 
 
-def print_entry(time, sub_name, action, votes: str, comments: str, title, user, status):
-    vote_comments = str(votes) + "/" + str(comments)
+def build_entry(event) -> str:
+    time = convert_to_datatime(int(event["ts"]))
+    sub_name = event["sub_name"]
+    action = event["type"]
+    title = event["title"]
+    user = event["who"]
+    status = event["status"]
+    vote_comments = str(event["votes"]) + "/" + str(event["com"])
 
-    print(str(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
-                            .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser')))
+    return str(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
+                             .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser'))
+
+
+def convert_to_datatime(timestamp: int) -> str:
+    return str(datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S'))
+
+
+def convert_to_epoch(timestamp: str) -> int:
+    dt_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+    return int(dt_obj.timestamp())
 
 
 def log_entry(connection, event):
-    time = str(datetime.utcfromtimestamp(int(event["ts"])).strftime('%Y-%m-%d %H:%M:%S'))
+    time = convert_to_datatime(int(event["ts"]))
     sub_name = event["sub_name"]
     action = str(event["type"]).strip()
     votes = event["votes"]
@@ -90,8 +119,6 @@ def log_entry(connection, event):
     #
     # if action == 'comment':
     #     db_utils.update_comments(connection, title, int(comments))
-
-    print_entry(time, sub_name, action, votes, comments, title, user, status)  # print the entry in CL
 
 
 if __name__ == "__main__":
