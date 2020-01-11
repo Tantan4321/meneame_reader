@@ -24,7 +24,7 @@ def run_reader():
         exit(0)
 
     con = db_utils.db_connect()  # connect to sqlite database
-    atexit.register(exit_handler, con)
+    atexit.register(exit_handler, con)  # register exit_handler to run on script stop
 
     try:
         while True:
@@ -49,7 +49,6 @@ def run_reader():
                 latest_events.clear()
                 new_timestamp = int(events_list[0]["ts"])  # first element of reversed list will be the most recent
                 for event in reversed_events:
-                    # print("starting....................................")
                     ret = build_entry(event).strip()  # build the formatted string
                     if int(event["ts"]) == new_timestamp:  # keep track of latest events for next run
                         latest_events.append(ret)
@@ -64,14 +63,11 @@ def run_reader():
                                 skip = True
                                 break
                         if skip:
-                            print("skipping....")
                             continue  # this event was reported last run, continue
-                        # print("not skipped")
                     print(ret)
                     # log_entry(con, event)
-                # print("outside for loop")
 
-                last_events.clear()
+                last_events.clear()  # clear out last events list
                 last_events = latest_events.copy()  # copy local latest events into last events
                 last_timestamp = new_timestamp  # track last timestamp for next run
 
