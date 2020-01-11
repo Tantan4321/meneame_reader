@@ -3,7 +3,7 @@
 from datetime import datetime
 
 import requests
-from bs4 import BeautifulSoup, UnicodeDammit
+from bs4 import BeautifulSoup
 
 
 def run_reader():
@@ -46,10 +46,8 @@ def print_entry(event):
     user = event["who"]
     status = event["status"]
 
-    ret = str(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
-                            .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser'))
-
-    print(UnicodeDammit(ret).unicode_markup)
+    print(str(BeautifulSoup("{} | {:<12} | {:<10} | {:<8} | {} | {} | {}"
+                            .format(time, sub_name, action, vote_comments, title, user, status), 'html.parser')))
 
 
 if __name__ == "__main__":
