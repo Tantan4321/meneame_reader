@@ -90,14 +90,24 @@ def create_article(connection, title, username, sub, timestamp):
 
     cur = connection.cursor()
     cur.execute(sql, (title, 0, username, sub, timestamp))
-    return cur.lastrowid
 
 
-def handle_exit(connection):
-    print('committing and closing DB...')
-    connection.commit()
-    connection.close()
-    print('Success!')
+def find_article(connection, title) -> int:
+    """
+        Finds the id of the of the article in the articles table (if it exists)
+        :return: -1 if the article doesn't exist, otherwise returns the table id
+    """
+    sql = """
+                SELECT id FROM articles WHERE title = ?"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (title,))
+    result = cur.fetchone()
+    if result is None:
+        article_id = -1  # the article does not exist in the db
+    else:
+        article_id = result['id']  # article exists, get id
+    return article_id
 
 
 def update_votes(connection, title, votes):
@@ -106,7 +116,21 @@ def update_votes(connection, title, votes):
 
     cur = connection.cursor()
     cur.execute(sql, (votes, title))
-    return cur.lastrowid
+
+
+def update_comments(connection, title, comments):
+    sql = """
+            UPDATE articles SET comments = ? WHERE title = ?"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (comments, title))
+
+
+def handle_exit(connection):
+    print('committing and closing DB...')
+    connection.commit()
+    connection.close()
+    print('Success!')
 
 
 def print_table(connection):
