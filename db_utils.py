@@ -192,8 +192,7 @@ def handle_exit(connection):
 def print_table(connection):
     """
     For debugging purposes.
-    Prints all rows in the SQLite articles table in the format:
-    (id, title, votes)
+    Prints all rows in the SQLite articles table.
     """
     cur = connection.cursor()
     cur.execute("SELECT * FROM articles")
