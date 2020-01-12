@@ -148,6 +148,24 @@ def add_published(connection, article_id, username, status, timestamp):
     cur.execute(sql, (username, status, timestamp, article_id))
 
 
+def add_problem(connection, title, username, status, timestamp):
+    sql = """
+        INSERT INTO problems (title, user, status, timestamp) 
+        VALUES (?,?,?,?)"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (title, username, status, timestamp))
+
+
+def add_post(connection, title, username, status, timestamp):
+    sql = """
+        INSERT INTO posts (title, user, status, timestamp) 
+        VALUES (?,?,?,?)"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (title, username, status, timestamp))
+    
+
 def update_votes(connection, article_id, votes):
     sql = """
             UPDATE articles SET votes = ? WHERE id = ?"""
