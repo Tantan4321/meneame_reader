@@ -108,8 +108,8 @@ def log_entry(connection, event):
     user = event["who"]
     status = event["status"]
 
-    # if action == 'new':
-    #     db_utils.create_article(connection, title, user, sub_name, time)
+    if action == 'new':
+        db_utils.create_article(connection, title, user, sub_name, time)
     #
     # if action == 'vote':
     #     db_utils.update_votes(connection, title, int(votes))

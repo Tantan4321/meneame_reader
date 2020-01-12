@@ -82,14 +82,16 @@ def create_database(connection):
         timestamp text NOT NULL)"""
     cur.execute(post_sql)
 
+    connection.commit()
+
 
 def create_article(connection, title, username, sub, timestamp):
     sql = """
-        INSERT INTO articles (title, votes, user, sub, timestamp) 
-        VALUES (?,?,?,?,?)"""
+        INSERT INTO articles (title, votes, comments, posting_user, sub, timestamp) 
+        VALUES (?,?,?,?,?,?)"""
 
     cur = connection.cursor()
-    cur.execute(sql, (title, 0, username, sub, timestamp))
+    cur.execute(sql, (title, 0, 0, username, sub, timestamp))
 
 
 def find_article(connection, title) -> int:
