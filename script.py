@@ -28,6 +28,14 @@ def run_reader():
     con = db_utils.db_connect()  # connect to sqlite database
     atexit.register(exit_handler, con)  # register exit_handler to run on script stop
 
+    print("""
+    ###########################################
+    #                                         #
+    #       Meneame Database Firehose         #
+    #                                         #
+    ###########################################
+    \n            (Press Ctrl+C to quit)\n""")
+
     try:
         while True:
             r = requests.get("https://www.meneame.net/backend/sneaker2")
@@ -121,7 +129,7 @@ def log_entry(connection, event):
         if article_id != -1:
             print("Logged comment...")
             db_utils.update_comments(connection, article_id, int(comments))
-            db_utils.add_vote(connection, article_id, user, status, time)
+            db_utils.add_comment(connection, article_id, user, status, time)
     elif action == 'new':
         print("Logged new article...")
         db_utils.create_article(connection, title, user, sub_name, time)
