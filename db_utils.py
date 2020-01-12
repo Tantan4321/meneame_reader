@@ -108,7 +108,7 @@ def find_article(connection, title) -> int:
     if result is None:
         article_id = -1  # the article does not exist in the db
     else:
-        article_id = result['id']  # article exists, get id
+        article_id = result[0]  # article exists, get id
     return article_id
 
 

@@ -123,6 +123,7 @@ def log_entry(connection, event):
             db_utils.update_comments(connection, article_id, int(comments))
             db_utils.add_vote(connection, article_id, user, status, time)
     elif action == 'new':
+        print("Logged new article...")
         db_utils.create_article(connection, title, user, sub_name, time)
     elif action == 'cedited':
         article_id = db_utils.find_article(connection, title)
