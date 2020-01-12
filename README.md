@@ -1,3 +1,3 @@
 # meneame_reader
 
-A website firehose scanner for Menéame.
+A SQLite database firehose scanner for the website Menéame.
