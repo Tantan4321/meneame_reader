@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from datetime import datetime
+from warnings import warn
+
 import db_utils
 
 import atexit
@@ -43,7 +45,7 @@ def run_reader():
                     if int(event["ts"]) == last_timestamp:
                         last_events.append(ret)
                     print(ret)  # print the entry in CL
-                    # log_entry(con, event)
+                    log_entry(con, event)  # log the event to the DB
                 is_first_run = False
             else:
                 latest_events.clear()
@@ -65,8 +67,8 @@ def run_reader():
                                 break
                         if skip:
                             continue  # this event was reported last run, continue
-                    print(ret)
-                    # log_entry(con, event)
+                    print(ret)  # print the entry in CL
+                    log_entry(con, event)  # log the event to the DB
 
                 last_events.clear()  # clear out last events list
                 last_events = latest_events.copy()  # copy local latest events into last events
@@ -108,14 +110,38 @@ def log_entry(connection, event):
     user = event["who"]
     status = event["status"]
 
-    if action == 'new':
+    if action == 'vote':
+        article_id = db_utils.find_article(connection, title)
+        if article_id != -1:
+            print("Logged vote...")
+            db_utils.update_votes(connection, article_id, int(votes))
+            db_utils.add_vote(connection, article_id, user, status, time)
+    elif action == 'comment':
+        article_id = db_utils.find_article(connection, title)
+        if article_id != -1:
+            print("Logged comment...")
+            db_utils.update_comments(connection, article_id, int(comments))
+            db_utils.add_vote(connection, article_id, user, status, time)
+    elif action == 'new':
         db_utils.create_article(connection, title, user, sub_name, time)
-    #
-    # if action == 'vote':
-    #     db_utils.update_votes(connection, title, int(votes))
-    #
-    # if action == 'comment':
-    #     db_utils.update_comments(connection, title, int(comments))
+    elif action == 'cedited':
+        article_id = db_utils.find_article(connection, title)
+        if article_id != -1:
+            print("Logged edit...")
+            db_utils.add_edit(connection, article_id, user, status, time)
+    elif action == 'published':
+        article_id = db_utils.find_article(connection, title)
+        if article_id != -1:
+            print("Logged publish...")
+            db_utils.add_published(connection, article_id, user, status, time)
+    elif action == 'problem':
+        print("Logging problem...")
+        db_utils.add_problem(connection, title, user, status, time)
+    elif action == 'post':
+        print("Logging post...")
+        db_utils.add_post(connection, title, user, status, time)
+    else:
+        warn("Unknown action")
 
 
 if __name__ == "__main__":

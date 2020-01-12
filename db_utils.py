@@ -164,7 +164,7 @@ def add_post(connection, title, username, status, timestamp):
 
     cur = connection.cursor()
     cur.execute(sql, (title, username, status, timestamp))
-    
+
 
 def update_votes(connection, article_id, votes):
     sql = """
