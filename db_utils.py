@@ -112,20 +112,56 @@ def find_article(connection, title) -> int:
     return article_id
 
 
-def update_votes(connection, title, votes):
+def add_vote(connection, article_id, username, status, timestamp):
     sql = """
-            UPDATE articles SET votes = ? WHERE title = ?"""
+        INSERT INTO votes (user, status, timestamp, article_id) 
+        VALUES (?,?,?,?)"""
 
     cur = connection.cursor()
-    cur.execute(sql, (votes, title))
+    cur.execute(sql, (username, status, timestamp, article_id))
 
 
-def update_comments(connection, title, comments):
+def add_comment(connection, article_id, username, status, timestamp):
     sql = """
-            UPDATE articles SET comments = ? WHERE title = ?"""
+        INSERT INTO comments (user, status, timestamp, article_id) 
+        VALUES (?,?,?,?)"""
 
     cur = connection.cursor()
-    cur.execute(sql, (comments, title))
+    cur.execute(sql, (username, status, timestamp, article_id))
+
+
+def add_edit(connection, article_id, username, status, timestamp):
+    sql = """
+        INSERT INTO edits (user, status, timestamp, article_id) 
+        VALUES (?,?,?,?)"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (username, status, timestamp, article_id))
+
+
+def add_published(connection, article_id, username, status, timestamp):
+    sql = """
+        INSERT INTO published (user, status, timestamp, article_id) 
+        VALUES (?,?,?,?)"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (username, status, timestamp, article_id))
+
+
+def update_votes(connection, article_id, votes):
+    sql = """
+            UPDATE articles SET votes = ? WHERE id = ?"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (votes, article_id))
+
+
+def update_comments(connection, article_id, comments):
+    sql = """
+            UPDATE articles SET comments = ? WHERE id = ?"""
+
+    cur = connection.cursor()
+    cur.execute(sql, (comments, article_id))
 
 
 def handle_exit(connection):
